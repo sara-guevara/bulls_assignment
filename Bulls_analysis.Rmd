@@ -102,6 +102,8 @@ str(df_team)
 
 ### Wasn't sure whether to use per game played or per minute played as this is a more common stat in Basketball. So looked at both.
 
+# 1. Per Game metric 
+
 ```{r MLR per game}
 lm_teams <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)
 tidy(lm_teams, conf.int = TRUE)
@@ -111,9 +113,15 @@ tidy(lm_teams, conf.int = TRUE)
 summary(lm_teams)
 ```
 
-```{r new lm wmp}
+# 2. Per minute played metric 
+
+```{r lm mp}
 lm_mp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_pmp + BLK_pmp + TOV_pmp + DRB_pmp + ORB_pmp, data = df_team)
 tidy(lm_mp, conf.int = TRUE)
+```
+
+```{r summary lm mp}
+summary(lm_mp)
 ```
 
 ## Checking assumptions for MLR
