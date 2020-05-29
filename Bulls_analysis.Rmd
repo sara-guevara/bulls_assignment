@@ -98,28 +98,26 @@ str(df_team)
 
 
 ## Multiple Regression
+###Checking confidence intervals, R squared stat and intercept to see which variables have a relationship and which don't.
+
+### Wasn't sure whether to use per game played or per minute played as this is a more common stat in Basketball. So looked at both.
 
 ```{r MLR per game}
-lm_teams_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)
-tidy(lm_teams_pg, conf.int = TRUE)
+lm_teams <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)
+tidy(lm_teams, conf.int = TRUE)
 ```
 
 ```{r summary}
-summary(lm_teams_pg)
+summary(lm_teams)
 ```
 
+```{r new lm wmp}
+lm_mp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_pmp + BLK_pmp + TOV_pmp + DRB_pmp + ORB_pmp, data = df_team)
+tidy(lm_mp, conf.int = TRUE)
+```
 
 ## Checking assumptions for MLR
-Checking assumptions for linear model (lm_teams_pg)
-
-# CHoosing variables that have a relationship.
-
-```{r MLR per game}
-lm_teams_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)
-tidy(lm_teams_pg, conf.int = TRUE)
-```
-
-
+### Checking assumptions for linear model (lm_teams_pg)
 
 
 
@@ -128,17 +126,27 @@ tidy(lm_teams_pg, conf.int = TRUE)
 3. Independence
 
 ```{r Assumpt_independence}
-car::durbinWatsonTest(lm_teams_pg)
+car::durbinWatsonTest(lm_teams)
 ```
 
+```{r Assumpt_independence_mp}
+car::durbinWatsonTest(lm_mp)
+```
+
+## D-W statistic is Close to '2' so meets this assumption
 
 4. Linearity
 
 ```{r linearity}
-car::avPlots(lm_teams_pg)
+car::avPlots(lm_teams)
 ```
 
-##Update variables to include only those with a relationship
+
+
+
+
+## based on the linear regression confidence intervals that are crossing over zero (therefore stating that there isn't a relationship). And the sign that a few variables do not show a linear relationship:
+## The linear regression model has been Updated to only include variables with a relationship.
 
 ```{r new lm}
 fit_pg <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
@@ -148,6 +156,8 @@ tidy(fit_pg, conf.int = TRUE)
 ```{r summary pg}
 summary(fit_pg)
 ```
+
+
 
 ```{r new lm wmp}
 fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
@@ -430,12 +440,12 @@ coef(lm(W ~ exp_PTS_pmp, data = df_team)) # used this to find the slope and coef
 ```
 
 ```{r predicted wins MP}
-
 ggplot(df_team, aes(exp_PTS_pmp, W, label = Team)) +
   geom_point(colour = "dodgerblue") +
-  geom_text(nudge_x = 0.005, cex = 3) +
+  geom_text(nudge_x = 0.005, nudge_y = 1, cex = 3) +
   geom_abline(linetype = "dashed", colour = "red", intercept = -177, slope = 475.6097  )
 ```
 
 ###For the majoirty of teams this metric shows that expected points per minute will correlate with a win. 
+
 
