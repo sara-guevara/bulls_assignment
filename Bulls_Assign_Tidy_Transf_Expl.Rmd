@@ -350,7 +350,7 @@ tidy(lm_teams_pg, conf.int = TRUE)
 ```
 
 ```{r MLR WIN percentage vs other variables}
-lm_teams_wp <- lm(WINp ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
+lm_teams_wp <- lm(WINp ~ AST_per_game + x3P_per_game + x2P_per_game + FG_per_game + FT_per_game, data = df_team)
 tidy(lm_teams_wp, conf.int = TRUE)
 ```
 
@@ -368,10 +368,19 @@ tidy(lm_teams_pmp, conf.int = TRUE)
 ```{r summary per minute played}
 summary(lm_teams_pmp)
 ```
+ # The R- Squared value suggested that we can be 98% confidence that all of these variables contribute to points in NBA. But a lot of these variables go over the zero line so we can't be confident that these variables have a relationship. Therefore we will modify the model to only include variables that have a relationship
+ 
 
+```{r new lm wmp}
+fit_mp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
+tidy(fit_mp, conf.int = TRUE)
+```
+
+```{r summary per minute played}
+summary(fit_mp)
+```
 
 ## Multiple Regression
-
 ```{r MLR per game}
 lm_teams_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)
 tidy(lm_teams_pg, conf.int = TRUE)
@@ -379,12 +388,15 @@ tidy(lm_teams_pg, conf.int = TRUE)
 
 Eliminate variables that have no relationship
 
-```{r per gam MLR}
-fit_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
+```{r per game MLR}
+fit_pg <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
 tidy(fit_pg, conf.int = TRUE)
 ```
 
 
+```{r summary pg}
+summary(fit_pg)
+```
 
 
 
