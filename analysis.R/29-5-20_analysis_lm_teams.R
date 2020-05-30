@@ -63,3 +63,6 @@ fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 tidy(fit_mp, conf.int = TRUE)
 
 summary(fit_mp)
+
+
+

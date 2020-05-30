@@ -113,11 +113,35 @@ str(df_team)
 Points are the outcome variable that are associated with winning but we want to check this.
 
 ```{r points_wins}
-ggplot(df_team, aes(x =PTS , y = W)) +
-  geom_point(alpha = 0.5, colour = "purple") +
-  geom_smooth(method = "lm")
+gg_linearity_W_PTS <- ggplot(df_team, aes(x = PTS/82, y = (W/82*100))) +
+  geom_point(alpha = 0.5, colour = "black") +
+  geom_smooth(method = "lm") 
+ 
 
 ```
+
+```{r finalising linearity plot}
+gg_W_PTS <- gg_linearity_W_PTS +
+  ggtitle("Points needed per game to increase the chance of winning") +
+  xlab("Points per game") +
+  ylab("Percentage chance of winning (%)") +
+  scale_x_continuous(limits = c(104,118), 
+                     breaks = c(seq(104,118, by = 2))) +
+  scale_y_continuous(limits = c(20,80),
+                      breaks = c(20, 30, 40 , 50 , 60 , 70, 80)) +
+  geom_hline(yintercept = 50, colour = "red", linetype = "dashed")
+
+gg_W_PTS
+``` 
+
+```{r save linear W vs PTS plot}
+ggsave("figs/lin_W_PTS.pdf")
+
+```
+
+
+
+
 
 ## Linear Model for wins in relationship to points
 ```{r wins_vs PTS}

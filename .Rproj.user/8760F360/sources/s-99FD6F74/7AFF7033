@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1590822423448.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7AFF7033",
+    "lastKnownWriteTime" : 1590732643,
+    "last_content_update" : 1590732643,
+    "path" : "H:/repos/bulls_assignment/analysis.R/29-5-20_final_player_df_tidy_transf.R",
+    "project_path" : "analysis.R/29-5-20_final_player_df_tidy_transf.R",
+    "properties" : {
+        "cursorPosition" : "15,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
