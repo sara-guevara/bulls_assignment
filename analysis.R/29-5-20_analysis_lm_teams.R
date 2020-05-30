@@ -31,15 +31,15 @@ summary(lm_mp)
 ## Checking assumptions for MLR
 ### Checking assumptions for both linear models (lm_teams_pg) (lm_mp)
 
-1, Response variables should be continuous. Yes this is met
-2. There are wo or more explanatory variables that are continuous or categorical Yes all of variables are continous
-3. Independence
+#1, Response variables should be continuous. Yes this is met
+#2. There are wo or more explanatory variables that are continuous or categorical Yes all of variables are continous
+#3. Independence
 
 car::durbinWatsonTest(lm_teams)
 
 ## D-W statistic is Close to '2' so meets this assumption
 
-4. Linearity
+#4. Linearity
 
 car::avPlots(lm_teams)
 

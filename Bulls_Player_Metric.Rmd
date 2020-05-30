@@ -112,10 +112,52 @@ df_player <- stat_pl %>%
 ```
 
 
+## Check struture of player stats data
+
+```{r str player}
+str(df_player)
+```
+
+
+```{r filter playing position}
+pos <- df_player %>%
+  filter(G > 0) %>%
+  group_by(player_name, Pos) %>%
+  select(player_name, Pos, G, GS)
+
+```
+
+## Checking all the positions
+
+```{r frequency distribution}
+table(pos$Pos)
+
+```
+
+
+## Eliminating positions that are more than one person
+
+
+```{r }
+pos <- pos %>%
+  filter(Pos != "C-PF", Pos != "PF-C", Pos != "PF-SF", Pos != "SF-SG", Pos != "SG-PF", Pos != "SG-SF" )
+
+```
+
+
+## Rechecking the positions
+```{r frequency distribution}
+table(pos$Pos)
+
+```
+
+
+#Averaging out minutes played per game, more player (mp_per_game) to create one number from the team data for the player data
+
 ```{r normalising players min played}
 mp_per_game <- df_team %>%
   group_by(Team) %>%
-  summarise(mp_per_game = MP/G /5) %>%
+  summarise(mp_per_game = MP/G/5) %>%
   pull(mp_per_game) %>%
   mean
 
@@ -123,7 +165,7 @@ mp_per_game
 ```
 
 
-## Points per minute per player
+## Creating new variables: Points per minute per player for each of the model metrics
 
 ```{r Player ave MP}
 df_player <- df_player %>%
@@ -134,7 +176,7 @@ df_player <- df_player %>%
             FT_pmp = FTA / MP)
 ```
 
-
+## normalising using the minutes played per game
 
 ```{r Player ave MP}
 player <- df_player %>%
@@ -147,6 +189,7 @@ player <- df_player %>%
   select(c(player_name, Pos, PTS_n, x3P_n, x2P_n, FT_n, x3P_pmp, x2P_pmp, FT_pmp, PTS_pmp))
 ```
 
+#Identifying how all the below points were achieved, with the normalised per minutes played
 
 ```{r New PTS statistics}
 player <- df_player %>%
@@ -162,13 +205,14 @@ head(player)
 
 ```
 
+## Expected points per minuted played metric
 
 ```{r player model}
 player <- mutate(player, exp_PTS_ppl = predict(fit_mp, newdata = player))
 
 ```
 
-#Expected points per player metric
+#Expected points per player metric visualisation
 
 ```{r noraml distribution}
 player %>%
@@ -187,42 +231,69 @@ player <- sal %>%
 ```
 
 
-## add in player positions
-
-
 
 ```{r filter playing position}
-pos <- df_player %>%
-  filter(G > 20) %>%
+pos <- pos %>%
+  filter(G > 0) %>%
   group_by(player_name, Pos) %>%
   summarise(G = sum(G)) %>%
   top_n(1,abs(G))
- 
-
-  
 
 ```
+
+
+## add in player positions
 
 ```{r add positions}
 player <- pos %>%
   select(player_name, Pos) %>%
-  right_join(player, by = "player_name") %>%
+  right_join(player, by = "player_name")
 ```  
-  
+
+#Checking for NAs
+
+```{r checking nas}
+sum(is.na (player))
+```
+
+#filtering out NAs
+
 ```{r nas}  
 player <- player %>%
   filter(!is.na(Pos)) %>%
   filter(!is.na(salary))
-           
-
+        
 ```
 
 
+
+# checking for NAs again
+
+```{r checking nas}
+sum(is.na (player))
+```
+
+
+#Creating Player rating data frame with ideal players at the top
+
 ```{r selecting players}
-player <- player %>%
+player_choices <- player %>%
   select(player_name, Pos, salary, exp_PTS_ppl) %>%
   arrange(desc(exp_PTS_ppl), salary)
 
+player_choices
+
 ```
+
+```{r Selecting players graph}
+player_choices %>%
+  ggplot(aes(x = salary / 1000, y = exp_PTS_ppl, color = Pos)) +
+  geom_point() +
+  xlab("salary (Thousands)")
+
+```
+
+
+
 
 
