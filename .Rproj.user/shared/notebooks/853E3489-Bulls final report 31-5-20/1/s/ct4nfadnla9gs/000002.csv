@@ -1,0 +1,5 @@
+"0","gg_play_sal_vs_Expt_PTS <- player_choices %>%"
+"0","  ggplot(aes(x = salary / 100000, y = (exp_PTS_ppl *48*5), color = Pos)) +"
+"0","  geom_point() +"
+"0","  xlab(""Salary ($100,000)"") "
+"0","gg_play_sal_vs_Expt_PTS"
