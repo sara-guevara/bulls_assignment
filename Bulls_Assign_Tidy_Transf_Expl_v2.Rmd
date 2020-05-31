@@ -27,9 +27,9 @@ stat_tm2 <- read_csv("data/raw/2018-19_nba_team_statistics_2.csv")
 pay <- read_csv("data/raw/2019-20_nba_team-payroll.csv")
 ```
 
-## Check struture
+## Check struture of the two team data sets, as well as tail and head only at this stage
 
-```{r str_team2}
+```{r str_team1}
 str(stat_tm1)
 ```
 
@@ -37,11 +37,28 @@ str(stat_tm1)
 str(stat_tm2)
 ```
 
+```{r head_team1}
+head(stat_tm1)
+```
+
+```{r tail_team1}
+tail(stat_tm1)
+```
+
+```{r head_team2}
+head(stat_tm2)
+```
+
+```{r tail_team2}
+tail(stat_tm2)
+```
+
+## manually checked the other free files. will focus on tidying the two team data files first. The other three will be used when it comes to the player analysis
 
 # Tidying data
 
-## Binding data from two data frames
-Binding variables from team 1 data and team 2 data.
+## Binding data from two team data frames
+### Binding variables from team 1 data and team 2 data.Leaving out rank, age and the last 3 empty columns from the team 1 stats data. 
 
 ```{r binding}
 df_team <- left_join(x = stat_tm2, y = stat_tm1 [-c(1,3, 23:25)],
@@ -49,7 +66,7 @@ df_team <- left_join(x = stat_tm2, y = stat_tm1 [-c(1,3, 23:25)],
 ```
 
 ## renaming variables: 
-Making sure variables do not include a %, replace with 'p'. And added a 'x' in front of number variables. Change '/' to _per_ .
+### Making sure variables do not include a %, replace with 'p'. And added a 'x' in front of number variables. Change '/' to _per_ .
 
 ```{r renaming}
 df_team <- df_team %>%
@@ -59,7 +76,7 @@ df_team <- df_team %>%
 
 ## Normalising key metrics
 
-We want normalise the key metrics to per game
+### We want normalise the key metrics chosen to per game
 
 ```{r Normalising metrics_pg}
 df_team <- df_team %>%
@@ -80,7 +97,7 @@ df_team <- df_team %>%
 ```
 
 ## Normalising variables per minuted played minutes played
-There are 5 players playing roughly 48mins per game. Therefore there are ~240mins per game. WE want normalise these varaibles for the minutes played. 
+### There are 5 players playing roughly 48mins per game. Therefore there are ~240mins per game. WE want normalise these varaibles for the minutes played. 
 
 ```{r Normalising metrics_pmp}
 df_team <- df_team %>%
@@ -100,17 +117,24 @@ df_team <- df_team %>%
         
 ```
 
-##Check structure of new data set
+##Check structure of new data set: and tail and head
 
 ```{r Str_df_team}
 str(df_team)
 ```
 
+```{r head_df_team}
+head(df_team)
+```
+
+```{r tail_df_team}
+tail(df_team)
+```
 
 # Explore Data
 
-#Points vs Wins
-Points are the outcome variable that are associated with winning but we want to check this.
+# Points vs Wins
+### Points are the outcome variable that are associated with winning but we want to check this.
 
 ```{r points_wins}
 gg_linearity_W_PTS <- ggplot(df_team, aes(x = PTS/82, y = (W/82*100))) +
@@ -119,6 +143,8 @@ gg_linearity_W_PTS <- ggplot(df_team, aes(x = PTS/82, y = (W/82*100))) +
  
 
 ```
+
+Can see that points have a positive correlation with winning
 
 ```{r finalising linearity plot}
 gg_W_PTS <- gg_linearity_W_PTS +
@@ -134,31 +160,25 @@ gg_W_PTS <- gg_linearity_W_PTS +
 gg_W_PTS
 ``` 
 
-```{r save linear W vs PTS plot}
-ggsave("figs/lin_W_PTS.pdf")
-
-```
-
-
-
-
 
 ## Linear Model for wins in relationship to points
+## looking the linear regression relationship between different metrics with winning and scoring points
+
 ```{r wins_vs PTS}
 fit_win = lm(WINp ~ PTS_per_game, data = df_team)
 summary(fit_win)
 ```
 
-Points contribute to 43% of how a team may win. There are other factors that also contribute
+### Points contribute to 43% of how a team may win. There are other factors that also contribute
 
 ```{r wins_vs PTS}
 tidy(fit_win, conf.int = TRUE)
 ```
 
-If we increase out points per game by 1, then we increase our chance of winning by 2%
+### If we increase out points per game by 1, then we increase our chance of winning by 2%
 
 ## Assists and Wins
-Lets see how much of the assists contribute to winning. 
+### Lets see how much of the assists contribute to winning. 
 
 ```{r assists_wins}
 ggplot(df_team, aes(x =AST_per_game , y = WINp)) +
@@ -166,14 +186,14 @@ ggplot(df_team, aes(x =AST_per_game , y = WINp)) +
   geom_smooth(method = "lm")
 
 ```
-
+### Assist can be seen to positively correlate with winning when looking at independently
 
 ```{r Assists_vs win percentage}
 fit_ast = lm(WINp ~ AST_per_game, data = df_team)
 summary(fit_ast)
 ```
 
-25% of assists contribute to winning
+25% of assists contribute to winning, this suggests that other factors may make up the bulk of the reason for winning. 
 
 ```{r wins_vs Assists}
 tidy(fit_ast, conf.int = TRUE)
@@ -202,6 +222,7 @@ ggplot(df_team, aes(AST_pmp, y = PTS_pmp)) +
   geom_smooth(method = "lm")
 ```
 
+### There is a positive correlation between scoring points and assists
 
 ```{r points vs Assists per game}
 ggplot(df_team, aes(AST_per_game, y = PTS_per_game)) +
@@ -210,6 +231,9 @@ ggplot(df_team, aes(AST_per_game, y = PTS_per_game)) +
   geom_text(aes(label = Team), nudge_y = 0.5, nudge_x = 0.5)
 
 ```
+
+### There is a positive correlation between scoring points and assists
+
 
 # Points vs FG
 
@@ -222,6 +246,9 @@ ggplot(df_team, aes(FG_pmp, y = PTS_pmp)) +
 
 ```
 
+### There is a positive relationship between field goals and points scored
+
+
 ```{r points vs Field Goals per game}
 ggplot(df_team, aes(x = FG_per_game, y = PTS_per_game)) +
   geom_point(alpha = 0.5, colour = "purple") +
@@ -229,7 +256,7 @@ ggplot(df_team, aes(x = FG_per_game, y = PTS_per_game)) +
   geom_text(aes(label = Team), nudge_y = 0.5, nudge_x = 0.5)
 
 ```
-
+### There is a positive relationship between field goals and points scored
 
 # Points vs x3P
 
@@ -242,7 +269,7 @@ ggplot(df_team, aes(x3P_pmp, y = PTS_pmp)) +
  
 
 ```
-
+### There is a positive relationship between 3 pointer field goals and points scored
 
 ```{r points vs x3P Attempts per game}
 ggplot(df_team, aes(x = x3P_per_game, y = PTS_per_game)) +
@@ -251,7 +278,7 @@ ggplot(df_team, aes(x = x3P_per_game, y = PTS_per_game)) +
  
 ```
 
-
+### There is a positive relationship between 3 pointer field goals and points scored
 
 # Points vs Steals
 
@@ -262,7 +289,7 @@ ggplot(df_team, aes(STL_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.005, nudge_x = 0.001)
 
 ```
-
+### There is minimal correlation between points scored and steals
 
 # Points vs Blocks
 
@@ -273,7 +300,7 @@ ggplot(df_team, aes(BLK_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.003, nudge_x = 0.0005)
 
 ```
-
+### There is a positive correlation between points scored and blocks
 
 ```{r points vs Blocks per game}
 ggplot(df_team, aes(BLK_per_game, y = PTS_per_game)) +
@@ -283,7 +310,7 @@ ggplot(df_team, aes(BLK_per_game, y = PTS_per_game)) +
 
 ```
 
-
+### There is a positive correlation between points scored and blocks
 
 # Points vs Free Throws
 
@@ -294,7 +321,7 @@ ggplot(df_team, aes(FT_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.002, nudge_x = 0.002, size = 3)
 
 ```
-
+### There is a positive correlation between free throws and points scored. 
 
 ```{r points vs Free Throw per game}
 ggplot(df_team, aes(FT_per_game, y = PTS_per_game)) +
@@ -303,7 +330,7 @@ ggplot(df_team, aes(FT_per_game, y = PTS_per_game)) +
   geom_text(aes(label = Team), nudge_y = 0.5, nudge_x = 0.25, size = 3)
 
 ```
-
+### There is a positive correlation between free throws and points scored. 
 
 # Points vs Offensive Rebounds
 
@@ -314,7 +341,7 @@ ggplot(df_team, aes(ORB_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.002, nudge_x = 0.002, size = 3)
 
 ```
-
+### There is a slightly positive correlation between poitns and offensive rebounds
 
 ```{r points vs Off Rebounds per game}
 ggplot(df_team, aes(ORB_per_game, y = PTS_per_game)) +
@@ -337,6 +364,8 @@ ggplot(df_team, aes(DRB_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.002, nudge_x = 0.002, size = 3)
 
 ```
+### There is a strong positive correlation between poitns and defensive rebounds
+
 
 ```{r points vs Defensive Rebounds per game}
 ggplot(df_team, aes(DRB_per_game, y = PTS_per_game)) +
@@ -356,7 +385,7 @@ ggplot(df_team, aes(TRB_pmp, y = PTS_pmp)) +
   geom_text(aes(label = Team), nudge_y = 0.002, nudge_x = 0.002, size = 3)
 
 ```
-
+### There is a strong positive correlation between poitns and total rebounds
 
 
 ## Checking for confounding variables
@@ -368,7 +397,7 @@ pairs(formula = ~ PTS_pmp + AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_
 ```{r confounding2}
 pairs(formula = ~ PTS_pmp+ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 ```
-There are no obvious correlationship between this data
+### There are no obvious confounding variables in this data set in either per games or per minutes played data sets
 
 
 ## Multiple Regression
@@ -377,9 +406,13 @@ There are no obvious correlationship between this data
 lm_teams_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game + TRB_per_game, data = df_team)
 tidy(lm_teams_pg, conf.int = TRUE)
 ```
+## There seems to be a correlation between AST, 3 pointers, 2 pointers and free thows. All the other variables have confidence intervals that cross the centre line, meaning that there is too much variability and therefore too much uncertainty. If there was another data set, these uncertain varaibles could show up either positive or negative correlation slops. 
+
+## The intercept is a negative numer which doesn't make sense in the real setting because you can't score negative points if all the other variables are negative.
+
 
 ```{r MLR WIN percentage vs other variables}
-lm_teams_wp <- lm(WINp ~ AST_per_game + x3P_per_game + x2P_per_game + FG_per_game + FT_per_game, data = df_team)
+lm_teams_wp <- lm(WINp ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
 tidy(lm_teams_wp, conf.int = TRUE)
 ```
 
@@ -387,27 +420,37 @@ tidy(lm_teams_wp, conf.int = TRUE)
 ```{r summary per game}
 summary(lm_teams_wp)
 ```
-
+### The positive varibles are compared to win percentage and there are few other varaibles that now have an uncertain variance. That is free throws and 2 points are no longer correlated with win percentage. This doesn't make sense as we know that you need to get points to win so we will stop using win pecentage as an outcome metric. We will stick to points per game and per minuted played
 
 ```{r MLR per minute played}
 lm_teams_pmp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_pmp + BLK_pmp + TOV_pmp + DRB_pmp + ORB_pmp + TRB_pmp, data = df_team)
 tidy(lm_teams_pmp, conf.int = TRUE)
 ```
 
+## There seems to be a correlation between 3 pointers, 2 pointers and free thows when compared to per minutes played. All the other variables have confidence intervals that cross the centre line, meaning that there is too much variability and therefore too much uncertainty. If there was another data set, these uncertain varaibles could show up either positive or negative correlation slops. 
+
+## The intercept is positive and a lot more realistic when most of the other variables are stable. 
+
+
 ```{r summary per minute played}
 summary(lm_teams_pmp)
 ```
- # The R- Squared value suggested that we can be 98% confidence that all of these variables contribute to points in NBA. But a lot of these variables go over the zero line so we can't be confident that these variables have a relationship. Therefore we will modify the model to only include variables that have a relationship
+## The R- Squared value suggested that we can be 98% confidence that all of these variables contribute to points in NBA. But a lot of these variables go over the zero line so we can't be confident that these variables have a relationship. Therefore we will modify the models to only include variables that have a relationship when normalised to per game and per minute played. 
+
  
 
 ```{r new lm wmp}
-fit_mp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
+fit_mp <- lm(PTS_pmp ~ x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 tidy(fit_mp, conf.int = TRUE)
 ```
+## all the CI are now positive and all the variables show a positive correlation in getting points. 
+
 
 ```{r summary per minute played}
 summary(fit_mp)
 ```
+The R value suggests that we can be 96% confident in these variables contributing to scoring points in basketball
+
 
 ## Multiple Regression
 ```{r MLR per game}
@@ -415,17 +458,20 @@ lm_teams_pg <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P
 tidy(lm_teams_pg, conf.int = TRUE)
 ```
 
-Eliminate variables that have no relationship
+## Based on this Multiple linear regression model, we will eliminate variables that have no relationship
 
 ```{r per game MLR}
 fit_pg <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
 tidy(fit_pg, conf.int = TRUE)
 ```
-
+## all of these variables are now all positively correlated with scoring points
 
 ```{r summary pg}
 summary(fit_pg)
 ```
 
+## WE can see that the R squared value is less than that used with minutes played. There based on this model we can be 85% confident that the variance here is related to these explanatory variables. 
 
+
+### WE think the minutes played variable is the most suitable but we will analyse both just to see. The analysis will occur in the analysis file. 
 

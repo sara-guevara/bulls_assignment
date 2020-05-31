@@ -1,6 +1,0 @@
-"0","top_5 <- player_choices %>%
-   summarise(Pos) %>%
-  top_n(first(Pos),abs(Pos))
-"
-"2","Error in abs(Pos) : non-numeric argument to mathematical function
-"
