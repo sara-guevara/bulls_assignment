@@ -1,0 +1,7 @@
+"0","res_labels <- if_else(abs(std_res) >= 2, paste(points), """")"
+"0","                    "
+"0","ggplot(data = NULL, aes(x = points, y = std_res, label = res_labels)) +"
+"0","  geom_point() +"
+"0","  ylim(c(-4,4)) +"
+"0","  geom_text(nudge_x = 0.5 ) +"
+"0","  geom_hline(yintercept = c(-3,3), colour = ""red"", linetype = ""dashed"")"

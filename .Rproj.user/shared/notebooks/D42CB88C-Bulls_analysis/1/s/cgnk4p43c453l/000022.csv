@@ -1,5 +1,0 @@
-"0","pay <- read_csv(""data/raw/2019-20_nba_team-payroll.csv"")
-"
-"2","Error in read_csv(""data/raw/2019-20_nba_team-payroll.csv"") : 
-  could not find function ""read_csv""
-"

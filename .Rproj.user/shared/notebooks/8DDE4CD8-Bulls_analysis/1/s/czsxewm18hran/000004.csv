@@ -1,0 +1,7 @@
+"0","cook <- cooks.distance(fit_pg)"
+"0","cook_labels <- if_else(cook >= 0.1, paste(points), """")"
+"0",""
+"0","ggplot(data = NULL, aes(x = points, y = cook)) +"
+"0","  geom_point() +"
+"0","  geom_text(aes(label = cook_labels), nudge_y = 0.02)"
+"0",""

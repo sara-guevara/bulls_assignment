@@ -1,0 +1,6 @@
+"0","ggsave(""figs/lin_W_PTS.pdf"")"
+"2","Saving 7 x 7 in image
+"
+"2","Error in grDevices::pdf(file = filename, ..., version = version) : 
+  cannot open file 'figs/lin_W_PTS.pdf'
+"

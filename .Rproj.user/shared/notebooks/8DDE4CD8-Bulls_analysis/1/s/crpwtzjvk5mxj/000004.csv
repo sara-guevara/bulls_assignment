@@ -1,0 +1,7 @@
+"0","std_res <- rstandard(fit_pg)"
+"0","points <- 1:length(std_res)"
+"0",""
+"0","ggplot(data = NULL, aes(x = points, y = std_res)) +"
+"0","  geom_point() +"
+"0","  ylim(c(-4,4)) +"
+"0","  geom_hline(yintercept = c(-3,3), colour = ""red"", linetype = ""dashed"")"

@@ -1,0 +1,7 @@
+"0","res <- residuals(fit_pg)"
+"0","fitted <- predict(fit_pg)"
+"0",""
+"0","ggplot(data = NULL, aes(x = fitted, y = res)) +"
+"0","  geom_point(colour = ""dodgerblue"") +"
+"0","  geom_hline(yintercept = 0, colour = ""red"", linetype = ""dashed"")"
+"0",""

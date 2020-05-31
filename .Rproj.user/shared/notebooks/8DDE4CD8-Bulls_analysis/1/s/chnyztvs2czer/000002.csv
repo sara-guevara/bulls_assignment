@@ -1,0 +1,4 @@
+"0","outliers <- c(5, 11, 16, 26 )"
+"0","filtered_df <- df_team %>%"
+"0","  filter(!Rk %in% outliers)"
+"0",""

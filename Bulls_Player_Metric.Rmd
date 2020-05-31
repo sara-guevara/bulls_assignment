@@ -50,23 +50,6 @@ df_team <- df_team %>%
 
 We want normalise the key metrics to per game
 
-```{r Normalising metrics_pg}
-df_team <- df_team %>%
-  mutate (PTS_per_game = PTS / G,
-          WINp = W/G,
-          AST_per_game = AST / G,
-          FG_per_game = FGA / G, 
-          x3P_per_game = x3P / G,
-          x2P_per_game = x2PA / G,
-          FT_per_game = FTA / G,
-          STL_per_game = STL / G,
-          BLK_per_game = BLK / G,
-          TOV_per_game = TOV / G,
-          ORB_per_game = ORB / G,
-          DRB_per_game = DRB / G,
-          TRB_per_game = TRB / G,
-          PF_per_game = PF / G)
-```
 
 ## Normalising variables per minuted played minutes played
 There are 5 players playing roughly 48mins per game. Therefore there are ~240mins per game. WE want normalise these varaibles for the minutes played. 
@@ -118,6 +101,39 @@ df_player <- stat_pl %>%
 str(df_player)
 ```
 
+```{r head player }
+head(df_player)
+```
+
+```{r tail playe}
+tail(df_player)
+
+```
+
+# There are multiple players players on each row. They need to be summarised in one row per player, only chosing the varaibles that we want to look at. 
+
+```{r summaries players}
+df_play_sum <- df_player %>%
+   select(player_name, G, GS, MP, FG, x3P, x2P, FT, PTS) %>%
+  group_by(player_name) %>%
+  summarise(MP = sum(MP),
+            G = sum(G),
+            GS = sum(G),
+            FG = sum(FG), 
+            x3P = sum(x3P),
+            x2P = sum(x2P),
+            FT = sum(FT), 
+            PTS = sum(PTS))
+```
+
+
+```{r head player summary}
+head(df_play_sum)
+```
+
+```{r tail player summary}
+tail(df_play_sum)
+```
 
 ```{r filter playing position}
 pos <- df_player %>%
@@ -168,31 +184,21 @@ mp_per_game
 ## Creating new variables: Points per minute per player for each of the model metrics
 
 ```{r Player ave MP}
-df_player <- df_player %>%
+df_play_sum <- df_play_sum %>%
  group_by(player_name) %>%
   mutate(PTS_pmp = PTS / MP,
             x3P_pmp = x3P / MP,
             x2P_pmp = x2P / MP,
-            FT_pmp = FTA / MP)
+            FT_pmp = FT / MP)
 ```
 
 ## normalising using the minutes played per game
 
-```{r Player ave MP}
-player <- df_player %>%
- group_by(player_name) %>%
-  mutate(PTS_n = PTS_pmp * mp_per_game,
-            x3P_n = x3P_pmp * mp_per_game,
-            x2P_n = x2P_pmp * mp_per_game,
-            FT_n = FT_pmp * mp_per_game) %>%
-  filter(PTS_n > 10) %>%
-  select(c(player_name, Pos, PTS_n, x3P_n, x2P_n, FT_n, x3P_pmp, x2P_pmp, FT_pmp, PTS_pmp))
-```
 
 #Identifying how all the below points were achieved, with the normalised per minutes played
 
 ```{r New PTS statistics}
-player <- df_player %>%
+player <- df_play_sum %>%
  summarise(MPn = sum(MP)/mp_per_game,
             x3P_pmp = sum(x3P_pmp)/ MPn,
             x2P_pmp = sum(x2P_pmp)/MPn,
@@ -231,6 +237,7 @@ player <- sal %>%
 ```
 
 
+## FIltering out the multiple positions per player
 
 ```{r filter playing position}
 pos <- pos %>%
@@ -286,14 +293,56 @@ player_choices
 ```
 
 ```{r Selecting players graph}
-player_choices %>%
-  ggplot(aes(x = salary / 1000, y = exp_PTS_ppl, color = Pos)) +
+gg_play_sal_vs_Expt_PTS <- player_choices %>%
+  ggplot(aes(x = salary / 1000, y = (exp_PTS_ppl *48*5), color = Pos)) +
   geom_point() +
-  xlab("salary (Thousands)")
+  xlab("Salary (Thousands)") 
+gg_play_sal_vs_Expt_PTS
 
+```
+
+```{r final graph of exp points vs salary}
+gg_play_sal_vs_Expt_PTS <- gg_play_sal_vs_Expt_PTS +
+  ggtitle("Expect points per game per player by salary") +
+  ylab("Expected points per player")
+
+gg_play_sal_vs_Expt_PTS
+``` 
+
+```{r save final player graph}
+ggsave("figs/Exp_points_per_player_by_salary.pdf")
 ```
 
 
 
 
 
+```{r Player ave MP}
+player <- df_play_sum %>%
+ group_by(player_name) %>%
+  mutate(PTS_n = PTS_pmp * mp_per_game,
+            x3P_n = x3P_pmp * mp_per_game,
+            x2P_n = x2P_pmp * mp_per_game,
+            FT_n = FT_pmp * mp_per_game) %>%
+  filter(PTS_n > 10) %>%
+  select(c(player_name, Pos, PTS_n, x3P_n, x2P_n, FT_n, x3P_pmp, x2P_pmp, FT_pmp, PTS_pmp))
+```
+
+
+```{r Normalising metrics_pg}
+df_team <- df_team %>%
+  mutate (PTS_per_game = PTS / G,
+          WINp = W/G,
+          AST_per_game = AST / G,
+          FG_per_game = FGA / G, 
+          x3P_per_game = x3P / G,
+          x2P_per_game = x2PA / G,
+          FT_per_game = FTA / G,
+          STL_per_game = STL / G,
+          BLK_per_game = BLK / G,
+          TOV_per_game = TOV / G,
+          ORB_per_game = ORB / G,
+          DRB_per_game = DRB / G,
+          TRB_per_game = TRB / G,
+          PF_per_game = PF / G)
+```

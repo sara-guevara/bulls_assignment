@@ -1,0 +1,2 @@
+"0","fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)"
+"0","tidy(fit_mp, conf.int = TRUE)"

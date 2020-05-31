@@ -1,0 +1,4 @@
+"0","player <- sal %>%"
+"0","  select(player_name, salary) %>%"
+"0","  right_join(player, by = ""player_name"")"
+"0",""

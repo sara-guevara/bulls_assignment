@@ -1,0 +1,6 @@
+"0","hats <- hatvalues(fit_pg)"
+"0","hats_labels <- if_else(hats >= 0.2, paste(points), """")"
+"0",""
+"0","ggplot(data = NULL, aes(x = points, y = hats)) +"
+"0","  geom_point() +"
+"0","  geom_text(aes(label = hats_labels), nudge_y = 0.02)"

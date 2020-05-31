@@ -1,0 +1,3 @@
+"0","player <- pos %>%"
+"0","  select(player_name, Pos) %>%"
+"0","  right_join(player, by = ""player_name"")"

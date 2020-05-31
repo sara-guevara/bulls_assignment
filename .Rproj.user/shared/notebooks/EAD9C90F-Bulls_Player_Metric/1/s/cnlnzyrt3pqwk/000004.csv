@@ -1,0 +1,4 @@
+"0","player <- player %>%"
+"0","  filter(!is.na(Pos)) %>%"
+"0","  filter(!is.na(salary))"
+"0","        "

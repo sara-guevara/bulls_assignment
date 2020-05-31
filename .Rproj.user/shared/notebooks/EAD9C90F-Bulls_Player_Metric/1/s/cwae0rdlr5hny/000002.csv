@@ -1,0 +1,3 @@
+"0","pos <- pos %>%"
+"0","  filter(Pos != ""C-PF"", Pos != ""PF-C"", Pos != ""PF-SF"", Pos != ""SF-SG"", Pos != ""SG-PF"", Pos != ""SG-SF"" )"
+"0",""

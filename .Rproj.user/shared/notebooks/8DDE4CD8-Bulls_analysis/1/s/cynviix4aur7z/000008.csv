@@ -1,0 +1,2 @@
+"0","lm_teams <- lm(PTS_per_game ~ AST_per_game + FG_per_game + x3P_per_game + x2P_per_game + FT_per_game + STL_per_game + BLK_per_game + TOV_per_game + DRB_per_game + ORB_per_game, data = df_team)"
+"0","tidy(lm_teams, conf.int = TRUE)"

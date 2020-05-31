@@ -1,0 +1,10 @@
+"0","coef(lm(exp_PTS_pmp ~ PW, data = df_team)) # used this to find the slope and coefficient of these two variables
+"
+"1","(Intercept) "
+"1","         PW "
+"1","
+"
+"1","0.421535309 "
+"1","0.000941072 "
+"1","
+"

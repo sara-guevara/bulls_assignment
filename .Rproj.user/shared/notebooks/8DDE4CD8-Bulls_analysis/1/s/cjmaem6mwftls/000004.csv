@@ -1,0 +1,3 @@
+"0","fit2_mp <- lm(PTS_pmp ~ x3P_pmp + x2P_pmp + FT_pmp, data = filtered_df)"
+"0",""
+"0","tidy(fit2_mp, conf.int = TRUE)"

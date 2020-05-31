@@ -1,0 +1,2 @@
+"0","lm_mp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_pmp + BLK_pmp + TOV_pmp + DRB_pmp + ORB_pmp, data = df_team)"
+"0","tidy(lm_mp, conf.int = TRUE)"

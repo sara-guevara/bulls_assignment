@@ -1,0 +1,6 @@
+"0","pos <- pos %>%"
+"0","  filter(G > 0) %>%"
+"0","  group_by(player_name, Pos) %>%"
+"0","  summarise(G = sum(G)) %>%"
+"0","  top_n(1,abs(G))"
+"0",""

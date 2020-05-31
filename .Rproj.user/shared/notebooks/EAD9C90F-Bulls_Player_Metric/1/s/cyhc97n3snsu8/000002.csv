@@ -1,0 +1,5 @@
+"0","pos <- df_player %>%"
+"0","  filter(G > 0) %>%"
+"0","  group_by(player_name, Pos) %>%"
+"0","  select(player_name, Pos, G, GS)"
+"0",""

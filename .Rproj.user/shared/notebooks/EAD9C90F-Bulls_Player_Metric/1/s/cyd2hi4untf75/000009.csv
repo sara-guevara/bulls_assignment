@@ -1,0 +1,5 @@
+"0","player_choices <- player %>%"
+"0","  select(player_name, Pos, salary, exp_PTS_ppl) %>%"
+"0","  arrange(desc(exp_PTS_ppl), salary)"
+"0",""
+"0","player_choices"

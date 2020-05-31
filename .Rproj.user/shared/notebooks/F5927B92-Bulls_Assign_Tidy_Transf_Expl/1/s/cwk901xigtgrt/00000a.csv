@@ -1,0 +1,6 @@
+"0","##Check structure of new data set"
+"0","# Explore Data"
+"0","#Points vs Wins"
+"0","Points are the outcome variable that are associated with winning but we want to check this."
+"2","Error: unexpected symbol in ""Points are""
+"

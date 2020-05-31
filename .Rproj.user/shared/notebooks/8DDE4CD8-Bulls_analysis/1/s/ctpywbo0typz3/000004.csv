@@ -1,0 +1,2 @@
+"0","fit_pg <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)"
+"0","tidy(fit_pg, conf.int = TRUE)"

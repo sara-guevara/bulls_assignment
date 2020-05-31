@@ -1,0 +1,3 @@
+"0","ggplot(data = NULL, aes(sample = res_mp)) +"
+"0","  stat_qq() + stat_qq_line() +"
+"0","  ylim(c(-0.01, 0.01))"

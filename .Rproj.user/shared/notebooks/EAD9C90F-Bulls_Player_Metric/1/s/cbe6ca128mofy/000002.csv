@@ -1,0 +1,11 @@
+"0","player <- df_play_sum %>%"
+"0"," group_by(player_name) %>%"
+"0","  mutate(PTS_n = PTS_pmp * mp_per_game,"
+"0","            x3P_n = x3P_pmp * mp_per_game,"
+"0","            x2P_n = x2P_pmp * mp_per_game,"
+"0","            FT_n = FT_pmp * mp_per_game) %>%"
+"0","  filter(PTS_n > 10) %>%"
+"0","  select(c(player_name, Pos, PTS_n, x3P_n, x2P_n, FT_n, x3P_pmp, x2P_pmp, FT_pmp, PTS_pmp))"
+"2","Error: Can't subset columns that don't exist.
+[31mx[39m The column `Pos` doesn't exist.
+"

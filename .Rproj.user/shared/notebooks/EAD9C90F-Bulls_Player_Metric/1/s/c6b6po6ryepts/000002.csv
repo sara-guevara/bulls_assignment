@@ -1,0 +1,2 @@
+"0","df_player <- stat_pl %>%"
+"0","  rename( x3P = '3P', x3PA = '3PA', x3Pp = '3P%', x2P = '2P', x2PA = '2PA', x2Pp = '2P%', FGp = 'FG%', FTp = 'FT%', eFGp = ""eFG%"")"
