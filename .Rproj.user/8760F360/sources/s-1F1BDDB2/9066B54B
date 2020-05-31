@@ -5,16 +5,16 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "158541541",
     "id" : "9066B54B",
-    "lastKnownWriteTime" : 1590901007,
-    "last_content_update" : 1590901007318,
+    "lastKnownWriteTime" : 1590910485,
+    "last_content_update" : 1590910485768,
     "path" : "H:/repos/bulls_assignment/Bulls_analysis.Rmd",
     "project_path" : "Bulls_analysis.Rmd",
     "properties" : {
-        "cursorPosition" : "438,0",
+        "cursorPosition" : "431,135",
         "last_setup_crc32" : "1F1BDDB2bb338d19",
-        "scrollLine" : "428"
+        "scrollLine" : "417"
     },
     "read_only" : false,
     "read_only_alternatives" : [

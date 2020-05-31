@@ -1,2 +1,0 @@
-"0","ggplot(data = NULL, aes(sample = res)) +"
-"0","  stat_qq() + stat_qq_line()"

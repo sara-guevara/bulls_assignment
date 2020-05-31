@@ -1,3 +1,0 @@
-"0","fit2 <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = filtered_df)"
-"0",""
-"0","tidy(fit2, conf.int = TRUE)"

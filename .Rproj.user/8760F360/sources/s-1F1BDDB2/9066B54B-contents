@@ -21,11 +21,8 @@ library(broom)
 # Reading in and tidying Bulls data files
 
 ```{r read_data, message=TRUE} 
-sal <- read_csv("data/raw/2018-19_nba_player-salaries.csv")
-stat_pl <- read_csv("data/raw/2018-19_nba_player_statistics.csv")
 stat_tm1 <- read_csv("data/raw/2018-19_nba_team_statistics_1.csv")
 stat_tm2 <- read_csv("data/raw/2018-19_nba_team_statistics_2.csv")
-pay <- read_csv("data/raw/2019-20_nba_team-payroll.csv")
 ```
 
 # Tidying data
@@ -97,7 +94,6 @@ str(df_team)
 ```
 
 
-
 ## Multiple Regression
 ###Checking confidence intervals, R squared stat and intercept to see which variables have a relationship and which don't.
 
@@ -143,7 +139,7 @@ summary(fit_pg)
 *per minute played*
 
 ```{r new lm wmp}
-fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
+fit_mp <- lm(PTS_pmp ~ x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 tidy(fit_mp, conf.int = TRUE)
 ```
 
@@ -152,8 +148,7 @@ tidy(fit_mp, conf.int = TRUE)
 summary(fit_mp)
 ```
 
-## Checking assumptions for MLR
-### Checking assumptions for linear model  (lm_teams_pg) (lm_mp)
+## Checking assumptions for MLR for both per game and minutes played
 
 1, Response variables should be continuous. Yes this is met
 2. There are wo or more explanatory variables that are continuous or categorical Yes all of variables are continous
@@ -166,7 +161,7 @@ car::durbinWatsonTest(fit_pg)
 ```{r Assumpt_independence_mp}
 car::durbinWatsonTest(fit_mp)
 ```
-
+## Both of these D- W statistics are close to 2 therefore they pass the assumption
 
 4. Linearity
 
@@ -180,11 +175,11 @@ car::avPlots(fit_pg)
 car::avPlots(fit_mp)
   
 ```
-
+# a positive relationship can be seen with these explanatory variables in relation to gaining points in a basketball game
 
 5. Outliers, Influential or high leverage points
 
-```{r outliers}
+```{r outliers _PG}
 std_res <- rstandard(fit_pg)
 points <- 1:length(std_res)
 
@@ -218,7 +213,7 @@ ggplot(data = NULL, aes(x = points_mp, y = std_res_mp, label = res_labels_mp)) +
   geom_hline(yintercept = c(-3,3), colour = "red", linetype = "dashed")
 ```
 
-
+## Overall there are minimal outliers for both per game and per minutes played. But we will investigate the leverage and inflence of these points below. We will then decide whether we should modify the model to eliminate the outlier points with high influence/leverage. 
 
 ## Leverage points
 
@@ -231,9 +226,13 @@ ggplot(data = NULL, aes(x = points, y = hats)) +
   geom_text(aes(label = hats_labels), nudge_y = 0.02)
 ```
 
+
+# There are no hat values that are greater than 1 but should investigate the hat values that are greater than 0.2 as they are above the rest
+
+
 ```{r hats MP}
 hats_mp <- hatvalues(fit_mp)
-hats_labels_mp <- if_else(hats_mp >= 0.3, paste(points), "")
+hats_labels_mp <- if_else(hats_mp >= 0.2, paste(points), "")
 
 ggplot(data = NULL, aes(x = points_mp, y = hats_mp)) +
   geom_point() +
@@ -265,9 +264,11 @@ ggplot(data = NULL, aes(x = points_mp, y = cook_mp)) +
 
 ```
 
-# There are no points that are above 1, but we will look at points above 0.1
+## There are no points that are above 1, but we will look at points above 0.1
+## There are a few points that have high influence in the minutesplayed data frame so we will test out the model without the outliers. 
 
-We will create a new df without the high influence points
+
+## We will create a new df without the high influence points for minutes played as this is the model we most likely will use.
 
 ```{r new df with no outliers_ MP}
 outliers <- c(5, 11, 16, 26 )
@@ -277,31 +278,20 @@ filtered_df <- df_team %>%
 ```
 
 
-```{r new lm with filtered_df}
-fit2 <- lm(PTS_per_game ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = filtered_df)
-
-tidy(fit2, conf.int = TRUE)
-```
-
-
-# by filtering out these variables there is minimal change to the slope or the intercept or the R-square value (from 0.89 to 0.88).
-# we don't want to take out these factors as they can introduce variability to the model and they make minimal change so we will leave them in. 
-
-
 ```{r new lm with filtered_df_mp}
 fit2_mp <- lm(PTS_pmp ~ x3P_pmp + x2P_pmp + FT_pmp, data = filtered_df)
 
 tidy(fit2_mp, conf.int = TRUE)
 ```
 
-
-
 ```{r summary filtered_df_mp}
 summary(fit2_mp)
 ```
 
-# by filtering out these variables there is minimal change to the slope or the intercept or the R-square value (from 0.96 to 0.98).
-# Removing these points also changes the intercept and the slope coefficent but only by a little. But as removing values adds in bias to the data, these points will not be removed. 
+## by filtering out these variables there is minimal change to the slope or the intercept or the R-square value (from 0.96 to 0.98).
+## Removing these points also changes the intercept and the slope coefficent but only by a little. But as removing values adds in bias to the data, these points will not be removed. 
+
+## WE will continue checking the rest of the assumptions
 
 6. Homoscedasticity
 
@@ -339,20 +329,22 @@ ggplot(data = NULL, aes(x = res)) +
   geom_histogram(colour = "black", fill = "dodgerblue", binwidth = 0.5)
 ```
 
-#Does not look normally distributed, use minutes played
+#Does not look normally distributed, try minutes played and check Q-Q plot for both
 
 ```{r normality_MP}
 ggplot(data = NULL, aes(x = res_mp)) +
   geom_histogram(colour = "black", fill = "dodgerblue", binwidth = 0.0045)
 ```
 
-# Looks normally distributed. There are tails on each end. However the L tail is a little longer
+# Looks normally distributed. There are tails on each end. However the L tail is a little longer. Check Q-Q plot
 
 ```{r qq plot PG}
 ggplot(data = NULL, aes(sample = res)) +
   stat_qq() + stat_qq_line()
          
 ```
+## Most of the data points are near the reference line. SLight tail on the L side. Check minutes played
+
 
 ```{r qq plot PG}
 ggplot(data = NULL, aes(sample = res_mp)) +
@@ -360,14 +352,8 @@ ggplot(data = NULL, aes(sample = res_mp)) +
   ylim(c(-0.01, 0.01))
          
 ```
+## The tail is a little longer near the bottom end but the points are more on the line than the per game line
 
-```{r qq plot PG}
-ggplot(data = NULL, aes(sample = res_mp)) +
-  stat_qq() + stat_qq_line()
-         
-```
-
-Transformed data from 5 variables: AST, FG, 3P, 2P, FT, to only 3 variables. 3P, 2P, FT. 
 
 8. Multicollinearity
 
@@ -375,27 +361,28 @@ Transformed data from 5 variables: AST, FG, 3P, 2P, FT, to only 3 variables. 3P,
 pairs(formula= ~ AST_per_game + x3P_per_game + x2P_per_game + FT_per_game, data = df_team)
 ```
 
-Might be a relationship between 3P and 2p?
+## Might be a relationship between 3P and 2p?
 
 ```{r VIF PG}
 car::vif(fit_pg)
 ```
 
-#There is a lot of multicollinearity seen. There is large variation between 3P and 2P. 
+#There is a lot of multicollinearity seen. There is large variation between 3P and 2P as they are both far away from 1. 
 
 ```{r multicollinearity MP}
 pairs(formula= ~ x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 ```
 
-# No relationship seen. 
+# No relationship seen with minutes played
 
 ```{r VIF MP}
 car::vif(fit_mp)
 ```
+## These values are a lot closer to 1 than when normalised to per game
+## So based on this we have chosen 'fit_mp' as our predicted model.
 
-## Predicted values.
-# So based on this we have chosen 'fit_mp' as our predicted model.
-
+# Predicted values.
+## Check predicted model for minutes played
 ```{r predict MP}
 head(predict(fit_mp))
 ```
@@ -405,9 +392,9 @@ summary(fit_mp)
 ```
 
 ##Predict model testing
-Use the predicted wins (PW) based on the data from Stats team
+## Use the predicted wins (PW) based on the data from Stats team
 
-
+## Find new expected model metric and find coefficient and intercept to help with reference line on plot below
 ```{r predicted wins ceofficient}
 exp_PTS_pmp = predict(fit_mp)
 coef(lm(exp_PTS_pmp ~ PW, data = df_team)) # used this to find the slope and coefficient of these two variables
@@ -421,9 +408,9 @@ coef(lm(exp_PTS_pmp ~ PW, data = df_team)) # used this to find the slope and coe
   geom_abline(linetype = "dashed", colour = "red", intercept = 0.421535, slope = 0.000941072  )
 
 ```
+Can see that with some teams above the line the model underestimated the points, and teams below the line the model overestimated the points needed to win. 
 
-
-# Against actual wins
+# Against actual win percentage
 
 ```{r predicted wins ceofficient}
 exp_PTS_pmp = predict(fit_mp)
@@ -438,7 +425,10 @@ gg_team_model_prediction <- ggplot(df_team, aes((W/82*100), exp_PTS_pmp, label =
   geom_abline(linetype = "dashed", colour = "red", intercept = 0.42228755184, slope = 0.000910  )
 gg_team_model_prediction
 ```
+## This model compared the actual win percentage fromt the 2018-2019 season. The model is on the Y axis now. WE can see that the teams on the upper end were closer to the reference line and therefore these teams seem to have a linear relationship. There are a few outliers on the lower side of the line where they scored a lot less runs than their win percentage. 
+
 
 ###For the majoirty of teams this metric shows that expected points per minute will correlate with a win. 
+## WE will use it for the player specific analysis now. SEe the file that is Bulls_Player_Metric to see the next step in the analysis. 
 
 
