@@ -11,50 +11,59 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Overview
 
-This report is designed to help selectors choose players for the Chicago Bulls NBA team for the 2019-20 season using a statistical approach. This approach uses statistics collected from the 2018-2019 season to analysis current teams and players to help create a player metric that gives a value to each player to identify how successful tehy are at helping teams to score and therefore win games. 
+This report is designed to help selectors choose players for the Chicago Bulls NBA team for the 2019-20 season using a statistical approach. This approach uses statistics collected from the 2018-2019 season to analysis current teams and players to help create a statistical model that gives a value to each player to identify how successful they are at scoring points. 
 
 ## Method overview
-The method involves analysing and identifying the variables that contribute to teams scoring points and therefore winning games. Once the variables are identified a 'statistical model' was created to help predict which teams would win. Player specific statistics were then normalised by 'minutes played'. The model was applied to the players statistical data and this helped to give each player one specific value that helped identify the expected points that that could help contribute to scoring per minute that they are on the court. This was matched with the salary and based on the combination the top 5 starting players were chosen. 
+The method involves analysing and identifying the correlated variables that contribute to teams scoring points and therefore winning games. Once the variables are identified a *statistical model* was created to help predict which teams would win. Player specific statistics were then normalised by *minutes played*. The model was applied to the players statistical data and this helped to give each player one specific value that predicted their ability to score points per minute that they would play on the court. This was matched with the salary and the combination of these two factors helped chose the recommended top five starting players. 
 
 ## Results
-These players were selected based on scoring the highest 'expected points scoring' metric in each of the 5 positions. Based on the team and player analysis the top 5 players that were chosen were:
+These five players were selected based on scoring the highest *expected points scoring* value in each of the five positions. Based on the team and player analysis the top five players that were chosen were:
+
 - Johnathan Motley as power forward
+
 - Malachi Richardson as Shooting guard
+
 - James Nunnally as small forward
+
 - Edmond Sumnar as point guard
+
 - Ekpe Udoh as centre
 
 
 The total salary of these starting 5 players comes well within the 2019-2020 budget at a total of $6,119,659.
 
-The below report goes into more details about the analysis process of the team metric model and how it was applied with the player statistical data. 
+The below report goes into more details about the analysis process of how the statistical model and variables were chosen and applied to the individual player data. 
 
 # Choosing the variables that result in winning NBA games.
 
 ## The question
-There were two inital questions that were asked. 
+There were two inital questions that were asked:
+
 1. What variables contribute to players scoring points
+
 2. Is it better to analyse these metrics based on winning games or by minutes played.
 
 The aim for this report was to:
-1. Choose variables that would contribute to helping NBA teams wins games and create a predictive team metric model 
-2. Compare the team metric to the predicted wins that were expected for the 2018-2019 season. 
-3. Apply the team metric to each players stats and create a value for each player to predict their value in helping a team win
-4. Compare the player value metric to each athletes salary and use the combination to choose the starting 5 players recommendations for the 2019-2020 NBA season for the Chicago Bulls.  
+
+1. Choose variables that would contribute to helping NBA teams wins games and create a predictive statistical model to estimate points that would be scored
+
+2. Compare the statistical model to the win percentage for the 2018-2019 season. 
+
+3. Apply the model to each player's statistics and create a value for each player to predict their ability score points and help a team win.
+
+4. Compare the player value metric to each athlete's salary and use the combination to choose the starting five recommended players for the 2019-2020 NBA season for the Chicago Bulls.  
 
 
-##Method for chosing team metric.
+## Method for chosing team metric.
 
 
-
-
-```{r librarys, echo=FALSE}
+```{r librarys, include=FALSE}
 library(tidyverse)
 library(dplyr)
 library(broom)
 ```
 
-```{r reading in files}
+```{r reading in files, include=FALSE}
 pay <- read_csv("data/processed/bulls_pay.csv")
 df_play_sum <- read_csv("data/processed/df_play_sum.csv")
 df_player <- read_csv("data/processed/df_player.csv")
@@ -68,23 +77,38 @@ pos <- read_csv("data/processed/pos.csv")
 
 The outcome variable was chosen to be points scored. The figure below (Figure 1) shows that to win a game you need to score at least  112 points. Therefore our aim is to find explanatory variables that have a positive relationship with scoring points.
 
-```{r wins vs points,echo = FALSE, eval=TRUE }
-knitr::include_graphics("figs/lin_W_PTS.pdf")
+```{r finalising linearity plot_fig 1, echo = FALSE, eval=TRUE}
+gg_linearity_W_PTS <- ggplot(df_team, aes(x = PTS/82, y = (W/82*100))) +
+  geom_point(alpha = 0.5, colour = "black") +
+  geom_smooth(method = "lm") 
 
-```
+gg_W_PTS <- gg_linearity_W_PTS +
+  ggtitle("Points needed per game to increase the chance of winning") +
+  xlab("Points per game") +
+  ylab("Percentage chance of winning (%)") +
+  scale_x_continuous(limits = c(104,118), 
+                     breaks = c(seq(104,118, by = 2))) +
+  scale_y_continuous(limits = c(20,80),
+                      breaks = c(20, 30, 40 , 50 , 60 , 70, 80)) +
+  geom_hline(yintercept = 50, colour = "red", linetype = "dashed")
+
+gg_W_PTS
+``` 
+
 *Figure 1. Relationship between winning and scoring points in basketball*
 
-The metrics that were considered as explanatory variables were 'FG' = Field goals, 'x3P' = 3-Point field goals, 'x2P' = 2-point field goals, 'FT' = Free throws, 'ORB' = Offensive rebounds, 'DRB' = Defensive rebounds, 'TRB' = Total rebounds, 'AST' = Assists, 'STL' = Steals, 'BLK' = Blocks, 'TOV' Turnovers.
+The metrics that were considered as explanatory variables were *FG* = Field goals, *x3P* = 3-Point field goals, *x2P* = 2-point field goals, *FT* = Free throws, *ORB* = Offensive rebounds, *DRB* = Defensive rebounds, *TRB* = Total rebounds, *AST* = Assists, *STL* = Steals, *BLK* = Blocks, *TOV* Turnovers.
 
-Below are the metrics that were analysed using multiple linear regression to identify if there was any relationship between these statistics and winning games (see Table 1). Out of all of considered explanatory variables, there were three that were found to have a positively correlated relationship with scoring points. The variables that showed a positive relationship were 3-point field goals (x3P), 2-point field goals (x2P) and free throws (FT). The rest of the variables had confidence intervals that crossed over the zero line which suggests that there is too much uncertainty with these variables to show any correlation with scoring points. 
+Below are the metrics that were analysed using multiple linear regression to identify any relationship between these statistics and scoring points (see Table 1). Out of all of considered explanatory variables, there were three that were found to have a positively correlated relationship with scoring points. These were: 3-point field goals (x3P), 2-point field goals (x2P) and free throws (FT). The rest of the variables had confidence intervals that crossed over the zero line which suggests that there is too much uncertainty with these variables to show any correlation with scoring points. 
 
 ```{r MLR per minute played, echo=FALSE, eval=TRUE}
 lm_teams_pmp <- lm(PTS_pmp ~ AST_pmp + FG_pmp + x3P_pmp + x2P_pmp + FT_pmp + STL_pmp + BLK_pmp + TOV_pmp + DRB_pmp + ORB_pmp + TRB_pmp, data = df_team)
 knitr::kable(tidy(lm_teams_pmp, conf.int = TRUE))
 ```
+
 *Table 2. The mutliple regression output. It can be seen that there are only 3 variables that show a positive correlation with scoring points per minutes played. They are by scoring 3-pointer and 2-pointer field goals, as well as scoring free throws.* 
 
-All of these variables were analysed by 'per game' as well as 'per minuted played'. The non correlated variables were eliminated. Based on correlated variables: minutes played was shown to have a higher R-Square value ( 0.96 compared to 0.88) when the variables were normalised compared to when they were normalised compared to by per game. This means that 96% of the variance in points per minute played can be explained by the variance in these explanatory variables (see Table 2).Therefore per minute played was chosen as the factor to help normalise the explanatory and outcome variables.
+All of these variables were analysed by *per game* as well as *per minuted played*. The non correlated variables were eliminated. Based on correlated variables: *minutes played* was shown to have a higher R-Square value (0.96 compared to 0.88) when the variables were normalised compared to when they were normalised compared to by *per game*. This means that 96% of the variance in points *per minute played* can be explained by the variance in these explanatory variables (see Table 2).Therefore *per minute played* was chosen as the factor to help normalise the explanatory and outcome variables.
 
 ```{r new lm wmp, echo=FALSE, eval=TRUE}
 fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
@@ -93,7 +117,7 @@ summary(fit_mp)
 
 ### Checking assumptions for the chosen model.
 
-Once the model was chosen all the assumptions to meet linear regression modeling were tested. To confirm that minutes played was a prefered metric to normalise the variables compared to per game - both models were tested with positively correlated variables. All the assumptions were met for the 'per minute played' metric, however the 'per game' metric residuals did not seem to be normally distributed.
+Once the model was chosen all the assumptions to meet multiple linear regression modeling were tested. To confirm that *per minutes played* was a prefered metric to normalise the variables compared to *per game* - both models were tested with the selected positively correlated variables. All the assumptions were met for the *per minute played* metric, however the *per game* metric residuals did not seem to be normally distributed and failed the multicollinearity assumption.
 
 Therefore the chosen model was:
 ```{r chosen lm wmp, echo=TRUE, eval=FALSE}
@@ -105,10 +129,13 @@ fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 
 Now that the model had been chosen, we tested it out compared to the predicted wins for the 2018-2019 season (Figure 2).
 
-```{r fig2, echo = FALSE, eval=TRUE }
+```{r fig2, include=FALSE}
 exp_PTS_pmp = predict(fit_mp)
 coef(lm(exp_PTS_pmp ~ W, data = df_team)) # used this to find the slope and coefficient of these two variables
 
+```
+
+```{r fig2, echo = FALSE, eval=TRUE}
 gg_team_model_prediction <- ggplot(df_team, aes((W/82*100), exp_PTS_pmp, label = Team)) +
   geom_point(colour = "dodgerblue") +
   geom_text(nudge_x = 4, nudge_y = 0.0015, cex = 2.5) +
@@ -125,32 +152,39 @@ gg_team_model_prediction <- gg_team_model_prediction +
 gg_team_model_prediction
 
 ```
+
 *Figure 2. Predicted wins based on predicted scored points per team*
 
-The red line in figure 2 is a reference line that indicates that if our model was 100% accurate the all of the points would fit on the line. As you can see that this model correlates with predicted wins for most of the teams, especially the top performing teams.  Rhere are a few outliers on the lower side of the line that shows that the model over estimated the points needed relative to the win percentage.
+The red line in figure 2 is a reference line that indicates that if our model was 100% accurate all of the points would fit on the line. This model correlates with win percentage for most of the teams, especially the top performing teams.  There are a few outliers on the lower side of the line that shows that the model over estimated the points needed relative to the win percentage.
 
 Outliers were found during the model testing, however due to the minimal change in slope and intercept points for the model, these points were chosen to leave in the model.The risk of bias of the model was considered higher than the need to take the outlier points out.  
 
 
 ## Applying team metric to players statistics
 
-This model was then applied to the player statistics.
-
 ### Choosing player statistics
 
 The explanatory variables in the player statistics were filtered out along with games played (G), games started (GS) and minutes played (MP). The chosen explanatory variables (3-pointer field goals, 2- pointer field goals, and free throws) along with the outcome variable (total points scored -PTS) were normalised relative to average minutes played by all potential players and games played.
 
-The model was applied to each of the athletes to give each athlete a predicted scoring value. This value was then summarised in a table along with their most commonly played posiiton and their salary.
+The model was applied to each of the athletes to give them a predicted scoring value. This value was summarised in a table along with their most commonly played posiiton and their salary.
 
+All the potential players in their positions were mapped out (see Figure 3).
 
+```{r final graph of exp points vs salary, echo = FALSE, eval=TRUE}
+gg_play_sal_vs_Expt_PTS <- player_choices %>%
+  ggplot(aes(x = salary / 100000, y = (exp_PTS_ppl *48*5), color = Pos)) +
+  geom_point() +
+  xlab("Salary ($100,000)") 
+gg_play_sal_vs_Expt_PTS
 
+gg_play_sal_vs_Expt_PTS <- gg_play_sal_vs_Expt_PTS +
+  ggtitle("Expect points per game per player by salary") +
+  ylab("Expected points per player") +
+  labs(colour = "Position")
 
-All the potential players in their positions were mapped out (see Figure 3.)
-```{r fig3, echo = FALSE, eval=TRUE }
+gg_play_sal_vs_Expt_PTS
+``` 
 
-knitr::include_graphics("figs/Exp_points_per_player_by_salary.pdf")
-
-```
 *Figure 3. Selecting players based on expected points per player*
 
 Based on Figure 3 it can be seen that the players that were valued the highest were payed on the lower end of the salary scale. 
@@ -171,9 +205,12 @@ starting_5 <- player_choices %>%
 knitr::kable(starting_5)
 
 ```
+
 *Table 3. Recommended starting five players based on predictive model.*
 
-The total salary for these 5 players was found to be: $6,119,659. This is well within the 118,000,000 budget. There will be no issues with recuiting another seven to ten players that are within the budget. THe recommendations for choosing the next top 5 players will be based on using the above model and times it by each players salary to come up with one value figure for each player and use that as a method to chose the other players. 
+The total salary for these five players was found to be: $6,119,659. This is well within the 118,000,000 budget. There will be no issues with recuiting another seven to ten players that are within the budget. The recommendations for choosing the rest of the players will be based on using the above model and times it by each players salary to come up with one value figure for each player and use that as a method to chose the other players that are next in line for each player position. 
+
+
 
 
 

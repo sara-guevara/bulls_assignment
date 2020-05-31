@@ -1,0 +1,390 @@
+---
+title: "Bulls_Player_Metric"
+author: "Sara G"
+date: "28/05/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Opening libraries
+
+```{r librarys}
+library(tidyverse)
+library(dplyr)
+library(broom)
+```
+
+# Reading team data files
+```{r read_data, message=TRUE} 
+stat_tm1 <- read_csv("data/raw/2018-19_nba_team_statistics_1.csv")
+stat_tm2 <- read_csv("data/raw/2018-19_nba_team_statistics_2.csv")
+```
+
+# Tidying data
+
+## Binding data from two data frames
+Binding variables from team 1 data and team 2 data
+
+```{r binding}
+df_team <- left_join(x = stat_tm2, y = stat_tm1 [-c(1,3, 23:25)],
+                     by = "Team")
+```
+
+## renaming variables: 
+Making sure variables do not include a %, replace with 'p'. And added a 'x' in front of number variables. Change '/' to _per_ .
+
+```{r renaming}
+df_team <- df_team %>%
+  rename( x3P = '3P', x3PA = '3PA', x3Pp = '3P%', x2P = '2P', x2PA = '2PA', x2Pp = '2P%', FGp = 'FG%', FTp = 'FT%', x3PAr = "3PAr", TSp = "TS%", eFGp = "eFG%", TOVp = "TOV%", ORBp = "ORB%", FT_per_FGA = "FT/FGA", DRBp = "DRB%")
+```
+
+
+## Normalising key metrics
+
+We want normalise the key metrics to per game
+
+
+## Normalising variables per minuted played minutes played
+There are 5 players playing roughly 48mins per game. Therefore there are ~240mins per game. WE want normalise these varaibles for the minutes played. 
+
+```{r Normalising metrics_pmp}
+df_team <- df_team %>%
+  mutate (PTS_pmp = PTS / MP , 
+          AST_pmp = AST / MP,
+          FG_pmp = FGA / MP, 
+          x3P_pmp = x3P / MP ,
+          x2P_pmp = x2P / MP ,
+          FT_pmp = FTA / MP,
+          STL_pmp = STL / MP ,
+          BLK_pmp = BLK / MP,
+          TOV_pmp = TOV / MP,
+          ORB_pmp = ORB / MP,
+          DRB_pmp = DRB / MP,
+          TRB_pmp = TRB / MP,
+          PF_pmp = PF / MP)
+        
+```
+
+##Check structure of new data set
+
+```{r Str_df_team}
+str(df_team)
+```
+
+# Recreating team metric for scoring points per minute 
+
+```{r new lm wmp}
+fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
+tidy(fit_mp, conf.int = TRUE)
+```
+
+## Creating player metric
+
+###reading in specific player raw data files
+```{r read_data, message=TRUE} 
+sal <- read_csv("data/raw/2018-19_nba_player-salaries.csv")
+stat_pl <- read_csv("data/raw/2018-19_nba_player_statistics.csv")
+pay <- read_csv("data/raw/2019-20_nba_team-payroll.csv")
+```
+
+## Checking str, head and tail of these data files
+
+```{r str stat_pl}
+str(stat_pl)
+
+```
+
+```{r head st player}
+head(stat_pl)
+```
+
+```{r tail}
+tail(stat_pl)
+
+```
+
+## checking str, head and tail of pay data frame
+
+```{r head pay}
+str(pay)
+```
+
+```{r head pay}
+head(pay)
+```
+
+```{r tail pay}
+tail(pay)
+
+```
+
+## checking str, head and tail of pay data frame
+
+```{r head salary}
+str(sal)
+```
+
+```{r head salary}
+head(sal)
+```
+
+```{r tail salary}
+tail(sal)
+
+```
+
+
+
+### Tidying player data
+
+```{r renaming_player}
+df_player <- stat_pl %>%
+  rename( x3P = '3P', x3PA = '3PA', x3Pp = '3P%', x2P = '2P', x2PA = '2PA', x2Pp = '2P%', FGp = 'FG%', FTp = 'FT%', eFGp = "eFG%")
+```
+
+
+## Check struture of player stats data
+
+```{r str player}
+str(df_player)
+```
+
+```{r head player }
+head(df_player)
+```
+
+```{r tail playe}
+tail(df_player)
+
+```
+
+# There are multiple players players on each row. They need to be summarised in one row per player, only chosing the varaibles that we want to look at. 
+
+```{r summaries players}
+df_play_sum <- df_player %>%
+   select(player_name, G, GS, MP, FG, x3P, x2P, FT, PTS) %>%
+  group_by(player_name) %>%
+  summarise(MP = sum(MP),
+            G = sum(G),
+            GS = sum(G),
+            FG = sum(FG), 
+            x3P = sum(x3P),
+            x2P = sum(x2P),
+            FT = sum(FT), 
+            PTS = sum(PTS))
+```
+
+## check structure, head and tail of new data frame
+
+```{r head player summary}
+head(df_play_sum)
+```
+
+```{r tail player summary}
+tail(df_play_sum)
+```
+
+## Create Position data frame that includes player name, position and games played and games started
+
+```{r filter playing position}
+pos <- df_player %>%
+  filter(G > 0) %>%
+  group_by(player_name, Pos) %>%
+  select(player_name, Pos, G, GS)
+
+```
+
+## Checking all the player positions
+
+```{r frequency distribution}
+table(pos$Pos)
+
+```
+
+
+## Eliminating position options that are more than one position
+
+
+```{r eliminate multiple player positions}
+pos <- pos %>%
+  filter(Pos != "C-PF", Pos != "PF-C", Pos != "PF-SF", Pos != "SF-SG", Pos != "SG-PF", Pos != "SG-SF" )
+
+```
+
+# Check the player position options again to make sure is only 5 options and only single positon options
+
+## Rechecking the positions
+```{r frequency distribution}
+table(pos$Pos)
+
+```
+
+#Normalise player stats data
+
+##Averaging out minutes played per game, more player (mp_per_game) to create one number from the team data for the player data
+
+```{r normalising players min played}
+mp_per_game <- df_team %>%
+  group_by(Team) %>%
+  summarise(mp_per_game = MP/G/5) %>%
+  pull(mp_per_game) %>%
+  mean
+
+mp_per_game
+```
+
+
+## Creating new variables: Points per minute per player for each of the model metrics
+
+```{r Player ave MP}
+df_play_sum <- df_play_sum %>%
+ group_by(player_name) %>%
+  mutate(PTS_pmp = PTS / MP,
+            x3P_pmp = x3P / MP,
+            x2P_pmp = x2P / MP,
+            FT_pmp = FT / MP)
+```
+
+### THis isn't need I realised after. So I created a new player data frame with normalised points based on the minutes player per game metric that was created above.
+
+
+##Normalising the metrics for our teams model for each player per minutes played, based on the minutes played normalised (MPn).
+
+```{r New PTS statistics}
+player <- df_play_sum %>%
+ summarise(MPn = sum(MP)/mp_per_game,
+            x3P_pmp = sum(x3P_pmp)/ MPn,
+            x2P_pmp = sum(x2P_pmp)/MPn,
+            FT_pmp = sum(FT_pmp) / MPn,
+           G = sum(G)) %>%
+  filter(G > 20) %>%
+  select(-c(MPn))
+
+head(player)
+
+```
+
+## Create Expected points per minuted played metric
+### using the fit_mp metric created in the analysis part of the project.
+
+```{r player model}
+player <- mutate(player, exp_PTS_ppl = predict(fit_mp, newdata = player))
+
+```
+
+#Expected points per player metric visualisation. Check to see how many points on average a player will achieve
+
+```{r noraml distribution}
+player %>%
+  ggplot(aes(x = exp_PTS_ppl)) +
+  geom_histogram(binwidth = 0.01, colour = "black", fill = "blue")
+
+```
+
+## add in salary to our player data frame
+
+```{r salary}
+player <- sal %>%
+  select(player_name, salary) %>%
+  right_join(player, by = "player_name")
+
+```
+
+
+## Realised above when checking player tail that some players had multiple rows with the same player name and different player positions. Need to filter out the multiple positions per player. We only want one position for each player. CHose the position that the player most commonly played
+
+```{r filter playing position}
+pos <- pos %>%
+  filter(G > 0) %>%
+  group_by(player_name, Pos) %>%
+  summarise(G = sum(G)) %>%
+  top_n(1,abs(G))
+
+```
+
+
+## add in player positions to player df
+
+```{r add positions}
+player <- pos %>%
+  select(player_name, Pos) %>%
+  right_join(player, by = "player_name")
+```  
+
+#Checking for NAs 
+
+```{r checking nas}
+sum(is.na (player))
+```
+
+#filtering out NAs from salary and position columns
+
+```{r nas}  
+player <- player %>%
+  filter(!is.na(Pos)) %>%
+  filter(!is.na(salary))
+        
+```
+
+
+
+# checking for NAs again - should be zero now
+
+```{r checking nas}
+sum(is.na (player))
+```
+
+
+#Creating Player rating data frame arranging with our most likely choice of players at the top
+
+```{r selecting players}
+player_choices <- player %>%
+  select(player_name, Pos, salary, exp_PTS_ppl) %>%
+  arrange(desc(exp_PTS_ppl), salary)
+
+player_choices
+
+```
+
+##visualise players vs salary for each position
+
+```{r Selecting players graph}
+gg_play_sal_vs_Expt_PTS <- player_choices %>%
+  ggplot(aes(x = salary / 1000, y = (exp_PTS_ppl *48*5), color = Pos)) +
+  geom_point() +
+  xlab("Salary ($1,000)") 
+gg_play_sal_vs_Expt_PTS
+
+```
+### From this it can be seen that power forwards are the position that scores that is estimated to score the most points. 
+
+
+```{r final graph of exp points vs salary}
+gg_play_sal_vs_Expt_PTS <- gg_play_sal_vs_Expt_PTS +
+  ggtitle("Expect points per game per player by salary") +
+  ylab("Expected points per player")
+
+gg_play_sal_vs_Expt_PTS
+``` 
+
+## Top 5 players have been chosen, this will filter out the five players that we will recommend to start based on model. 
+
+```{r filter top player for each position}
+starting_5 <- player_choices %>%
+  group_by (player_name) %>%
+  filter(player_name == "Johnathan Motley" | 
+           player_name == "Malachi Richardson" | 
+           player_name == "James Nunnally"| 
+           player_name == "Edmond Sumner" | 
+           player_name == "Ekpe Udoh")
+starting_5
+```
+
+
+
+
+
+
