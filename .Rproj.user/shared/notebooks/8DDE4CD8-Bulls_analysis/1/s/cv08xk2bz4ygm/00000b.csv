@@ -1,0 +1,5 @@
+"0"," ggplot(df_team, aes(PW,exp_PTS_pmp, label = Team)) +"
+"0","  geom_point(colour = ""dodgerblue"") +"
+"0","  geom_text(nudge_x = 0.005, cex = 3) +"
+"0","  geom_abline(linetype = ""dashed"", colour = ""red"", intercept = 0.421535, slope = 0.000941072  )"
+"0",""

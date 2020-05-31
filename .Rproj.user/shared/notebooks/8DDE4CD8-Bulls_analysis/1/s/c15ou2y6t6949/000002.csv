@@ -1,5 +1,5 @@
-"0","coef(lm(exp_PTS_pmp ~ PW, data = df_team)) # used this to find the slope and coefficient of these two variables
-"
+"0","exp_PTS_pmp = predict(fit_mp)"
+"0","coef(lm(exp_PTS_pmp ~ PW, data = df_team)) # used this to find the slope and coefficient of these two variables"
 "1","(Intercept) "
 "1","         PW "
 "1","

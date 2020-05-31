@@ -54,12 +54,25 @@ library(dplyr)
 library(broom)
 ```
 
+```{r reading in files}
+pay <- read_csv("data/processed/bulls_pay.csv")
+df_play_sum <- read_csv("data/processed/df_play_sum.csv")
+df_player <- read_csv("data/processed/df_player.csv")
+df_team <-read_csv("data/processed/df_team.csv")
+player <- read_csv("data/processed/player.csv")
+player_choices <- read_csv("data/processed/player_choices.csv")
+pos <- read_csv("data/processed/pos.csv")
+                   
+```
+
+
 The outcome variable was chosen to be points scored. The figure below (Figure 1) shows that to win a game you need to score at least  112 points. Therefore our aim is to find explanatory variables that have a positive relationship with scoring points.
 
-```{r, out.width= "0.3\\linewidth", include TRUE, fig.align 'left', fig.cap= "Figure 1. Relationship between winning and scoring points in basketball", echo = FALSE }
+```{r wins vs points,echo = FALSE, eval=TRUE }
 knitr::include_graphics("figs/lin_W_PTS.pdf")
 
 ```
+*Figure 1. Relationship between winning and scoring points in basketball*
 
 The metrics that were considered as explanatory variables were 'FG' = Field goals, 'x3P' = 3-Point field goals, 'x2P' = 2-point field goals, 'FT' = Free throws, 'ORB' = Offensive rebounds, 'DRB' = Defensive rebounds, 'TRB' = Total rebounds, 'AST' = Assists, 'STL' = Steals, 'BLK' = Blocks, 'TOV' Turnovers.
 
@@ -92,16 +105,28 @@ fit_mp <- lm(PTS_pmp ~   x3P_pmp + x2P_pmp + FT_pmp, data = df_team)
 
 Now that the model had been chosen, we tested it out compared to the predicted wins for the 2018-2019 season (Figure 2).
 
-```{r, out.width= "0.3\\linewidth", include TRUE, fig.align 'left', fig.cap= "Figure 2. Predicted wins based on predicted scored points per team", echo = FALSE }
+```{r fig2, echo = FALSE, eval=TRUE }
+exp_PTS_pmp = predict(fit_mp)
+coef(lm(exp_PTS_pmp ~ W, data = df_team)) # used this to find the slope and coefficient of these two variables
+
+gg_team_model_prediction <- ggplot(df_team, aes((W/82*100), exp_PTS_pmp, label = Team)) +
+  geom_point(colour = "dodgerblue") +
+  geom_text(nudge_x = 4, nudge_y = 0.0015, cex = 2.5) +
+  geom_abline(linetype = "dashed", colour = "red", intercept = 0.42228755184, slope = 0.000910  )
+
+
 gg_team_model_prediction <- gg_team_model_prediction +
   ggtitle("Predicted scored points per team compared to wins in 2018-2019 season") +
   xlab("Win percentage from 2018-2019 season") +
   ylab("Predicted of scored points per team, per minuted played") +
   scale_x_continuous(limits = c(18,80), 
                      breaks = c(seq(20,80, by = 10)))
+
 gg_team_model_prediction
 
 ```
+*Figure 2. Predicted wins based on predicted scored points per team*
+
 The red line in figure 2 is a reference line that indicates that if our model was 100% accurate the all of the points would fit on the line. As you can see that this model correlates with predicted wins for most of the teams, especially the top performing teams.  Rhere are a few outliers on the lower side of the line that shows that the model over estimated the points needed relative to the win percentage.
 
 Outliers were found during the model testing, however due to the minimal change in slope and intercept points for the model, these points were chosen to leave in the model.The risk of bias of the model was considered higher than the need to take the outlier points out.  
@@ -121,11 +146,12 @@ The model was applied to each of the athletes to give each athlete a predicted s
 
 
 All the potential players in their positions were mapped out (see Figure 3.)
+```{r fig3, echo = FALSE, eval=TRUE }
 
-```{r, out.width= "0.3\\linewidth", include TRUE, fig.align 'left', fig.cap= "Figure 3. Selecting players based on expected points per player", echo = FALSE }
 knitr::include_graphics("figs/Exp_points_per_player_by_salary.pdf")
 
 ```
+*Figure 3. Selecting players based on expected points per player*
 
 Based on Figure 3 it can be seen that the players that were valued the highest were payed on the lower end of the salary scale. 
 

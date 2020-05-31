@@ -296,7 +296,7 @@ player_choices
 gg_play_sal_vs_Expt_PTS <- player_choices %>%
   ggplot(aes(x = salary / 1000, y = (exp_PTS_ppl *48*5), color = Pos)) +
   geom_point() +
-  xlab("Salary (Thousands)") 
+  xlab("Salary ($1,000)") 
 gg_play_sal_vs_Expt_PTS
 
 ```
@@ -313,36 +313,17 @@ gg_play_sal_vs_Expt_PTS
 ggsave("figs/Exp_points_per_player_by_salary.pdf")
 ```
 
+```{r filter top player for each position}
+top_5 <- player_choices %>%
+   summarise(Pos) %>%
+  top_n(first(Pos),abs(Pos))
+  
+  
 
-
-
-
-```{r Player ave MP}
-player <- df_play_sum %>%
- group_by(player_name) %>%
-  mutate(PTS_n = PTS_pmp * mp_per_game,
-            x3P_n = x3P_pmp * mp_per_game,
-            x2P_n = x2P_pmp * mp_per_game,
-            FT_n = FT_pmp * mp_per_game) %>%
-  filter(PTS_n > 10) %>%
-  select(c(player_name, Pos, PTS_n, x3P_n, x2P_n, FT_n, x3P_pmp, x2P_pmp, FT_pmp, PTS_pmp))
 ```
 
 
-```{r Normalising metrics_pg}
-df_team <- df_team %>%
-  mutate (PTS_per_game = PTS / G,
-          WINp = W/G,
-          AST_per_game = AST / G,
-          FG_per_game = FGA / G, 
-          x3P_per_game = x3P / G,
-          x2P_per_game = x2PA / G,
-          FT_per_game = FTA / G,
-          STL_per_game = STL / G,
-          BLK_per_game = BLK / G,
-          TOV_per_game = TOV / G,
-          ORB_per_game = ORB / G,
-          DRB_per_game = DRB / G,
-          TRB_per_game = TRB / G,
-          PF_per_game = PF / G)
-```
+
+
+
+

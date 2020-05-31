@@ -431,7 +431,7 @@ coef(lm(exp_PTS_pmp ~ W, data = df_team)) # used this to find the slope and coef
 
 ```
 
-```{r predicted wins MP}
+```{r predicted points vs wins MP}
 gg_team_model_prediction <- ggplot(df_team, aes((W/82*100), exp_PTS_pmp, label = Team)) +
   geom_point(colour = "dodgerblue") +
   geom_text(nudge_x = 0.005, nudge_y = 0.001, cex = 2.5) +

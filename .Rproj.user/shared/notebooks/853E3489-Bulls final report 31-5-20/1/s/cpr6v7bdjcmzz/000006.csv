@@ -1,0 +1,73 @@
+"0","pay <- read_csv(""data/processed/bulls_pay.csv"")"
+"2","Parsed with column specification:
+cols(
+  team_id = [32mcol_double()[39m,
+  team = [31mcol_character()[39m,
+  salary = [31mcol_character()[39m
+)
+"
+"0","df_play_sum <- read_csv(""data/processed/df_play_sum.csv"")"
+"2","Parsed with column specification:
+cols(
+  player_name = [31mcol_character()[39m,
+  MP = [32mcol_double()[39m,
+  G = [32mcol_double()[39m,
+  GS = [32mcol_double()[39m,
+  FG = [32mcol_double()[39m,
+  x3P = [32mcol_double()[39m,
+  x2P = [32mcol_double()[39m,
+  FT = [32mcol_double()[39m,
+  PTS = [32mcol_double()[39m
+)
+"
+"0","df_player <- read_csv(""data/processed/df_player.csv"")"
+"2","Parsed with column specification:
+cols(
+  .default = col_double(),
+  player_name = [31mcol_character()[39m,
+  Pos = [31mcol_character()[39m,
+  Tm = [31mcol_character()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"0","df_team <-read_csv(""data/processed/df_team.csv"")"
+"2","Parsed with column specification:
+cols(
+  .default = col_double(),
+  Team = [31mcol_character()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"0","player <- read_csv(""data/processed/player.csv"")"
+"2","Parsed with column specification:
+cols(
+  player_name = [31mcol_character()[39m,
+  Pos = [31mcol_character()[39m,
+  salary = [32mcol_double()[39m,
+  x3P_pmp = [32mcol_double()[39m,
+  x2P_pmp = [32mcol_double()[39m,
+  FT_pmp = [32mcol_double()[39m,
+  G = [32mcol_double()[39m,
+  exp_PTS_ppl = [32mcol_double()[39m
+)
+"
+"0","player_choices <- read_csv(""data/processed/player_choices.csv"")"
+"2","Parsed with column specification:
+cols(
+  player_name = [31mcol_character()[39m,
+  Pos = [31mcol_character()[39m,
+  salary = [32mcol_double()[39m,
+  exp_PTS_ppl = [32mcol_double()[39m
+)
+"
+"0","pos <- read_csv(""data/processed/pos.csv"")"
+"2","Parsed with column specification:
+cols(
+  player_name = [31mcol_character()[39m,
+  Pos = [31mcol_character()[39m,
+  G = [32mcol_double()[39m
+)
+"
+"0","                   "
