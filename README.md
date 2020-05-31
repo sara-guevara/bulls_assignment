@@ -19,6 +19,6 @@ I had issues putting the RMD folders in the cleaning and analysis folders - the 
 
 I assume I didn't set the root directory properly but I am not sure how I should have done it. 
 
-There is a root directly on teh main folder and everything in here has been attached and updated and pushed through to github.
+There is a root directly on the main folder and everything in here has been attached and updated and pushed through to github.
 
 
