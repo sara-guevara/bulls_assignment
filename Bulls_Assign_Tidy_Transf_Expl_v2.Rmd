@@ -137,7 +137,7 @@ tail(df_team)
 ### Points are the outcome variable that are associated with winning but we want to check this.
 
 ```{r points_wins}
-gg_linearity_W_PTS <- ggplot(df_team, aes(x = PTS/82, y = (W/82*100))) +
+gg_linearity_W_PTS <- ggplot(df_team, aes(x = (PTS/82), y = (W/82*100))) +
   geom_point(alpha = 0.5, colour = "black") +
   geom_smooth(method = "lm") 
  

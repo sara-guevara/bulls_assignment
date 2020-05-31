@@ -1,7 +1,0 @@
-"0",""
-"0","gg_play_sal_vs_Expt_PTS <- gg_play_sal_vs_Expt_PTS +"
-"0","  ggtitle(""Expect points per game per player by salary"") +"
-"0","  ylab(""Expected points per player"") +"
-"0","  labs(colour = ""Position"")"
-"0",""
-"0","gg_play_sal_vs_Expt_PTS"

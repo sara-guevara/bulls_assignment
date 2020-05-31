@@ -1,1 +1,0 @@
-{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"summary(fit_mp)","line_number":0}],"message":"Error in summary(fit_mp) : object 'fit_mp' not found\n"}

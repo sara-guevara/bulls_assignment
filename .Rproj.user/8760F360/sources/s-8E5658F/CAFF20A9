@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1590826802406.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1853169186",
+    "id" : "CAFF20A9",
+    "lastKnownWriteTime" : 1590918001,
+    "last_content_update" : 1590918672619,
+    "path" : "H:/repos/bulls_assignment/Bulls final report 31-5-20.Rmd",
+    "project_path" : "Bulls final report 31-5-20.Rmd",
+    "properties" : {
+        "cursorPosition" : "95,0",
+        "last_setup_crc32" : "",
+        "scrollLine" : "93",
+        "tempName" : "Untitled2"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

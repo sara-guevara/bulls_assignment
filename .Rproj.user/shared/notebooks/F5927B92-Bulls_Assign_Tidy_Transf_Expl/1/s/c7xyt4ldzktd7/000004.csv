@@ -1,9 +1,0 @@
-"0","pay <- read_csv(""data/raw/2019-20_nba_team-payroll.csv"")
-"
-"2","Parsed with column specification:
-cols(
-  team_id = [32mcol_double()[39m,
-  team = [31mcol_character()[39m,
-  salary = [31mcol_character()[39m
-)
-"
